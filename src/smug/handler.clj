@@ -17,8 +17,8 @@
 
 
 (defroutes app-routes
-  (GET "/" [] "<img src=\"/score.png\" />")
-  (GET "/score.png" [] (render-score))
+  (GET "/" [] "<img src=\"/score.svg\" />")
+  (GET "/score.svg" [] (render-score))
   (route/not-found "Not Found"))
 
 (def app

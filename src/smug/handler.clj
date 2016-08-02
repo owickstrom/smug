@@ -5,7 +5,7 @@
             [ring.util.io :refer [piped-input-stream]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [smug.music :refer [gen-music]]
-            [smug.render :refer [create-score-component render-to]]))
+            [smug.render.abc4j :refer [create-score-component render-to]]))
 
 (defn render-score []
   {:headers {"Content-Type" "image/png"}

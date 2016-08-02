@@ -4,11 +4,11 @@
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.util.io :refer [piped-input-stream]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-            [smug.music :refer [gen-music]]
+            [smug.music :refer [generate-score]]
             [smug.render.lilypond :refer [render-svg-to]]))
 
 (defn render-score []
-  (let [score (gen-music 32)
+  (let [score (generate-score 32)
         out (render-svg-to
              score
              (java.io.File/createTempFile "score" ".svg"))]

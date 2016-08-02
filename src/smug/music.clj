@@ -69,6 +69,6 @@
 
 ;;; INTERFACE
 
-(defn gen-music [n]
+(defn generate-score [n]
   (let [bars (run n [q] (baro q))]
     {:bars (map ->bar bars)}))

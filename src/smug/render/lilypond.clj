@@ -7,10 +7,14 @@
 
 (defmethod render-element :note
   [[_ pitch duration]]
-  (str (name pitch)
-       (if (ratio? duration)
-         (denominator duration)
-         duration)))
+  (str
+   (let [n (name pitch)]
+     (if (= (clojure.string/lower-case n) n)
+       (str n "'")
+       n))
+   (if (ratio? duration)
+     (denominator duration)
+     duration)))
 
 (defmethod render-element :bar-line
   [[_ line-type]]

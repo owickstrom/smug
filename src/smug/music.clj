@@ -58,7 +58,7 @@
   (nth [:c :d :e :f :g :a :b] (- p 1)))
 
 (defn ->duration [d]
-  (/ 1 d))
+  (/ d 16))
 
 (defn ->note [[p d]]
   [(->pitch p)
@@ -71,4 +71,4 @@
 
 (defn gen-music [n]
   (let [bars (run n [q] (baro q))]
-    (map ->bar bars)))
+    {:bars (map ->bar bars)}))

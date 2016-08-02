@@ -1,6 +1,6 @@
 # SMUG
 
-The **S*heet **Mu**sic **G**enerator.
+The **S**heet **Mu**sic **G**enerator.
 
 ## Prerequisites
 

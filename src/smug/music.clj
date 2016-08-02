@@ -11,39 +11,32 @@
 (defn durationo [d]
   (fd/in d (fd/domain 1 2 4 8 16 32)))
 
-(defn noteo [note]
-  (matche [note]
-   ([ [p d] ]
-    (pitcho p)
-    (durationo d))))
+(defne noteo [note]
+  ([ [p d] ]
+   (pitcho p)
+   (durationo d)))
 
-(defn noteso [notes]
-  (matche
-   [notes]
-   ([ [] ])
-   ([ [n . ns] ]
-    (noteo n)
-    (noteso ns))))
+(defne noteso [notes]
+  ([ [] ])
+  ([ [n . ns] ]
+   (noteo n)
+   (noteso ns)))
 
-(defn sum-durationo [notes sum]
-  (matche
-   [notes]
-   ([ [] ]
-    (fd/in sum (fd/domain 0)))
-   ([ [[p d] . ns] ]
-    (fresh (s)
-      (durationo d)
-      (fd/+ d s sum)
-      (sum-durationo ns s)))))
+(defne sum-durationo [notes sum]
+  ([ [] _ ]
+   (fd/in sum (fd/domain 0)))
+  ([ [[p d] . ns] _ ]
+   (fresh (s)
+     (durationo d)
+     (fd/+ d s sum)
+     (sum-durationo ns s))))
 
-(defn rising-fromo [notes pitch]
-  (matche
-   [notes]
-   ([ [] ])
-   ([ [[p _] . ns] ]
-    (pitcho p)
-    (fd/> p pitch)
-    (rising-fromo ns p))))
+(defne rising-fromo [notes pitch]
+  ([ [] _ ])
+  ([ [[p _] . ns] _ ]
+   (pitcho p)
+   (fd/> p pitch)
+   (rising-fromo ns p)))
 
 (defn baro [notes]
   (fresh []

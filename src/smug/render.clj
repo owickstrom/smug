@@ -36,15 +36,34 @@
     (.setStrictDuration note (duration->strict duration))
     note))
 
-(defn score->tune [{:keys [bars]}]
+(defn bar->elements [bar]
+  (map ->abc-note bar))
+
+(defn line->elements [line]
+  (apply
+   concat
+   (interpose [(BarLine.)]
+              (map bar->elements line))))
+
+(defn lines->elements [lines]
+  (apply
+   concat
+   (interpose [(EndOfStaffLine.)]
+              (map line->elements lines))))
+
+(defn score->elements [score]
+  (let [line-break (EndOfStaffLine.)
+        lines (partition 8 (:bars score))
+           line-elements (lines->elements lines)]
+    (concat
+     line-elements
+     [(BarLine. BarLine/END)])))
+
+(defn score->tune [score]
   (let [tune (Tune.)
         music (.getMusic tune)]
-    (doseq [line (partition 4 bars)]
-      (doseq [bar line]
-        (doseq [note bar]
-          (.addElement music (->abc-note note)))
-        (.addElement music (BarLine.)))
-      (.addElement music (EndOfStaffLine.)))
+    (doseq [element (score->elements score)]
+      (.addElement music element))
     tune))
 
 (defn create-score-component [score]

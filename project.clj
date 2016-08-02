@@ -5,6 +5,7 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [compojure "1.5.1"]
                  [ring/ring-defaults "0.2.1"]
+                 [ring/ring-jetty-adapter "1.5.0"]
                  [org.clojure/core.logic "0.8.10"]
                  [de.sciss/abc4j "0.6.0"]]
   :plugins [[lein-ring "0.9.7"]]

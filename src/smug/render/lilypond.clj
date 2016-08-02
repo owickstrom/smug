@@ -8,10 +8,11 @@
 (defmethod render-element :note
   [[_ pitch duration]]
   (str
-   (let [n (name pitch)]
-     (if (= (clojure.string/lower-case n) n)
-       (str n "'")
-       n))
+   (let [n (name pitch)
+         lower (clojure.string/lower-case n)]
+     (if (= lower n)
+       (str lower "'")
+       lower))
    (if (ratio? duration)
      (denominator duration)
      duration)))
@@ -24,7 +25,7 @@
 
 (defmethod render-element :end-of-staff-line
   [_]
-  "\n  ")
+  "\\break \n  ")
 
 (defn render-svg-to [score f]
   (let [elements (score->elements score)
@@ -52,4 +53,3 @@
         (throw (ex-info "Failed to render score using Lilypond"
                         {:stdout out
                          :stderr err}))))))
-

@@ -38,7 +38,7 @@
    (fresh (s)
      (durationo d difficulty)
      (fd/+ d s sum)
-     (sum-durationo ns difficulty s))))
+     (notes-durationo ns difficulty s))))
 
 (defne all-longero [notes minimum difficulty]
   ([ [] _ _ ])
@@ -96,7 +96,7 @@
 
 (defn generate-score
   ([n]
-   (generate-score n :easy))
+   (generate-score n :hard))
   ([n difficulty]
    (let [groups (run n [q]
                   (fresh [d]

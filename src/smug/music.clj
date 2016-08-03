@@ -9,7 +9,8 @@
   ([ _ :easy ]
    (fd/in p (fd/interval 1 7)))
   ([ _ _ ]
-   (fd/in p (fd/interval 1 14))))
+   (fd/in p (fd/interval 1 7)))
+  )
 
 (defne durationo [d difficulty]
   ([ _ :easy ]
@@ -17,7 +18,7 @@
   ([ _ :medium]
    (fd/in d (fd/domain 2 4 8)))
   ([ _ :hard]
-   (fd/in d (fd/domain 1 2 4))))
+   (fd/in d (fd/domain 1 2))))
 
 (defne noteo [note difficulty]
   ([ [p d] _ ]
@@ -30,28 +31,47 @@
    (noteo n difficulty)
    (noteso ns difficulty)))
 
-(defne sum-durationo [notes difficulty sum]
+(defne notes-durationo [notes difficulty sum]
   ([ [] _ _ ]
-   (fd/in sum (fd/domain 0)))
+   (fd/== sum 0))
   ([ [[p d] . ns] _ _ ]
    (fresh (s)
      (durationo d difficulty)
      (fd/+ d s sum)
      (sum-durationo ns difficulty s))))
 
-(defne rising-fromo [notes pitch difficulty]
+(defne all-longero [notes minimum difficulty]
   ([ [] _ _ ])
-  ([ [[p _] . ns] _ _ ]
-   (pitcho p difficulty)
-   (fd/> p pitch)
-   (rising-fromo ns p difficulty)))
+  ([ [[p d] . ns] _ _ ]
+   (durationo d difficulty)
+   (fd/>= d minimum)
+   (all-longero ns minimum difficulty)))
+
+(defn groupo [notes difficulty]
+  (fresh []
+    (noteso notes difficulty)
+    (notes-durationo notes difficulty 4)
+    (matche [notes]
+            ([ [[_ 1] [_ 1] [_ 1] [_ 1]] ])
+            ([ [[_ 1] [_ 2] [_ 1]] ])
+            ([ [[_ 2] [_ 1] [_ 1]] ])
+            ([ [[_ 1] [_ 1] [_ 2]]])
+            ([ [[_ 2] [_ 2]]])
+            ([ _ ]
+             (all-longero notes 4 difficulty)))))
+
+(defne groupso [groups difficulty duration]
+  ([ [] _ _ ]
+   (fd/== duration 0))
+  ([ [g . gs] _ _ ]
+   (fresh (s)
+     (groupo g difficulty)
+     (fd/+ 4 s duration)
+     (groupso gs difficulty s))))
 
 (defn baro [notes difficulty]
   (fresh []
-    (sum-durationo notes difficulty 16)
-    (noteso notes difficulty)
-    ;;(rising-fromo notes 0 difficulty)
-    ))
+    (groupso notes difficulty 16)))
 
 ;;; CONVERSION
 
@@ -69,14 +89,17 @@
 (defn ->bar [bar]
   (map ->note bar))
 
+(defn flatten-groups [groups]
+  (map #(apply concat %1) groups))
+
 ;;; INTERFACE
 
 (defn generate-score
   ([n]
    (generate-score n :easy))
   ([n difficulty]
-   (let [bars (run n [q]
-                (fresh [d]
-                  (baro q d)
-                  (== d difficulty)))]
-     {:bars (map ->bar bars)})))
+   (let [groups (run n [q]
+                  (fresh [d]
+                    (baro q d)
+                    (== d difficulty)))]
+     {:bars (map ->bar (flatten-groups groups))})))

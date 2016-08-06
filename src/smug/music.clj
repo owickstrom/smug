@@ -31,10 +31,38 @@
      (fd/+ v s total)
      (notes-total-valueo ns s))))
 
-(defn baro [notes]
-  (fresh []
-    (noteso notes)
-    (notes-total-valueo notes 16)))
+(defn groupo [notes duration]
+  (all
+   (noteso notes)
+   (note-valueo duration)
+   (matche [notes]
+           ([ [[_ 1] [_ 1] [_ 1] [_ 1]] ]
+            (fd/== duration 4))
+           ([ [[_ 1] [_ 2] [_ 1]] ]
+            (fd/== duration 4))
+           ([ [[_ 2] [_ 1] [_ 1]] ]
+            (fd/== duration 4))
+           ([ [[_ 1] [_ 1] [_ 2]] ]
+            (fd/== duration 4))
+           ([ [[_ 2] [_ 2]] ]
+            (fd/== duration 4))
+           ([ [[_ 2] [_ 4] [_ 2]] ]
+            (fd/== duration 8))
+           ([ [[_ v]] ]
+            (fd/>= v 4)
+            (fd/== duration v)))))
+
+(defne groupso [groups duration]
+  ([ [] _ ]
+   (fd/== duration 0))
+  ([ [g . gs] _ ]
+   (fresh [group-total sub-total]
+     (groupo g group-total)
+     (fd/+ group-total sub-total duration)
+     (groupso gs sub-total))))
+
+(defn baro [groups]
+  (groupso groups 16))
 
 ;;; CONVERSION
 
@@ -51,9 +79,13 @@
 (defn ->bar [bar]
   (map ->note bar))
 
+(defn flatten-groups [groups]
+  (map #(apply concat %1) groups))
+
 ;;; INTERFACE
 
 (defn generate-score [n]
-  (let [bars (run n [q]
-               (baro q))]
+  (let [groups (run n [q]
+                 (baro q))
+        bars (flatten-groups groups)]
     {:bars (map ->bar bars)}))

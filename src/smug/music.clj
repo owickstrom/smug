@@ -41,12 +41,12 @@
 (defn ->pitch [p]
   (nth [:c :d :e :f :g :a :b] (- p 1)))
 
-(defn ->duration [d]
+(defn ->note-value [d]
   (/ d 16))
 
 (defn ->note [[p d]]
   [(->pitch p)
-   (->duration d)])
+   (->note-value d)])
 
 (defn ->bar [bar]
   (map ->note bar))

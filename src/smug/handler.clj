@@ -8,7 +8,7 @@
             [smug.render.lilypond :refer [render-svg-to]]))
 
 (defn render-score []
-  (let [score (generate-score 32 :hard)
+  (let [score (generate-score 32)
         out (render-svg-to
              score
              (java.io.File/createTempFile "score" ".svg"))]

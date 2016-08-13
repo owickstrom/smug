@@ -61,8 +61,34 @@
      (fd/+ group-total sub-total duration)
      (groupso gs sub-total))))
 
-(defn baro [groups]
-  (groupso groups 16))
+(defne bar-noteso [bar notes]
+  ([ [] _ ]
+   (== notes []))
+  ([ [group . groups] _ ]
+   (fresh [groups-notes]
+     (bar-noteso groups groups-notes)
+     (appendo group groups-notes notes))))
+
+(defne scaleo [direction notes]
+  ([ _ [] ])
+  ([ _ [[p _]] ] (pitcho p))
+  ([ _ [[p1 _] . [p2 v2] . ns]]
+   (pitcho p1)
+   (pitcho p2)
+   (conde
+    [(== direction :asc)
+     (fd/+ p1 1 p2)]
+    [(== direction :desc)
+     (fd/- p1 1 p2)])
+   (fresh [tail]
+     (conso [p2 v2] ns tail)
+     (scaleo direction tail))))
+
+(defn baro [bar]
+  (fresh [dir notes]
+    (groupso bar 16)
+    (bar-noteso bar notes)
+    (scaleo dir notes)))
 
 ;;; CONVERSION
 

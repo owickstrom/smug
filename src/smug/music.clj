@@ -111,10 +111,10 @@
      (min-intervalo min tail))))
 
 (defn baro [bar]
-  (fresh [dir notes]
+  (fresh [notes]
     (groupso bar 16)
     (bar-noteso bar notes)
-    (scaleo dir notes)))
+    (min-intervalo 4 notes)))
 
 ;;; CONVERSION
 

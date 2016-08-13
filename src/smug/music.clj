@@ -33,24 +33,24 @@
 
 (defn groupo [notes duration]
   (all
-   (noteso notes)
-   (note-valueo duration)
-   (matche [notes]
-           ([ [[_ 1] [_ 1] [_ 1] [_ 1]] ]
-            (fd/== duration 4))
-           ([ [[_ 1] [_ 2] [_ 1]] ]
-            (fd/== duration 4))
-           ([ [[_ 2] [_ 1] [_ 1]] ]
-            (fd/== duration 4))
-           ([ [[_ 1] [_ 1] [_ 2]] ]
-            (fd/== duration 4))
-           ([ [[_ 2] [_ 2]] ]
-            (fd/== duration 4))
-           ([ [[_ 2] [_ 4] [_ 2]] ]
-            (fd/== duration 8))
-           ([ [[_ v]] ]
-            (fd/>= v 4)
-            (fd/== duration v)))))
+    (matche [notes]
+            ([ [[_ v]] ]
+             (fd/>= v 4)
+             (fd/== v duration))
+            ([ [[_ 1] [_ 1] [_ 1] [_ 1]] ]
+             (fd/== duration 4))
+            ([ [[_ 1] [_ 2] [_ 1]] ]
+             (fd/== duration 4))
+            ([ [[_ 2] [_ 1] [_ 1]] ]
+             (fd/== duration 4))
+            ([ [[_ 1] [_ 1] [_ 2]] ]
+             (fd/== duration 4))
+            ([ [[_ 2] [_ 2]] ]
+             (fd/== duration 4))
+            ([ [[_ 2] [_ 4] [_ 2]] ]
+             (fd/== duration 8)))
+    (noteso notes)
+    (note-valueo duration)))
 
 (defne groupso [groups duration]
   ([ [] _ ]

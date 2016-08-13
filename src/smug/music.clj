@@ -5,6 +5,30 @@
 
 ;;; LOGIC
 
+(defne foldo
+  "Fold the logical sequence 's' with relation 'f' using 'a' as an initial
+   accumulator and 'o' as the output variable. The function 'f' takes the
+   accumulator, a value in the sequence, and an output accumulator variable.
+   When the sequence is empty the initial accumulator is unified with the
+   output variable."
+  [f s a o]
+  ([ _ [] _ _ ]
+   (== a o))
+  ([ _ [ h . t ] _ _ ]
+   (fresh [a']
+     (f a h a')
+     (foldo f t a' o))))
+
+(defn everyo
+  "Apply the relation 'f' on every value in the logical sequence 's'."
+  [f s]
+  (fresh [a o]
+    (foldo (fn [_ x _] (f x)) s a o)))
+
+(defn lengtho
+  [s l]
+  (foldo #(fd/+ %1 1 %3) s 0 l))
+
 (defn pitcho [p]
   (fd/in p (fd/interval 1 7)))
 
@@ -16,20 +40,15 @@
    (pitcho p)
    (note-valueo v)))
 
-(defne noteso [notes]
-  ([ [] ])
-  ([ [n . ns] ]
-   (noteo n)
-   (noteso ns)))
+(defn noteso [notes]
+  (everyo noteo notes))
 
-(defne notes-total-valueo [notes total]
-  ([ [] _ ]
-   (fd/== total 0))
-  ([ [[p v] . ns] _ ]
-   (fresh (s)
-     (note-valueo v)
-     (fd/+ v s total)
-     (notes-total-valueo ns s))))
+(defn notes-total-valueo [notes total]
+  (let [f (fne [a n o]
+               ([ _ [p v] _ ]
+                (note-valueo v)
+                (fd/+ a v o)))]
+    (foldo f notes 0 total)))
 
 (defn groupo [notes duration]
   (all
@@ -49,25 +68,18 @@
              (fd/== duration 4))
             ([ [[_ 2] [_ 4] [_ 2]] ]
              (fd/== duration 8)))
-    (noteso notes)
+    (everyo noteo notes)
     (note-valueo duration)))
 
-(defne groupso [groups duration]
-  ([ [] _ ]
-   (fd/== duration 0))
-  ([ [g . gs] _ ]
-   (fresh [group-total sub-total]
-     (groupo g group-total)
-     (fd/+ group-total sub-total duration)
-     (groupso gs sub-total))))
+(defn groupso [groups duration]
+  (let [f (fn [a group o]
+            (fresh [group-total]
+              (groupo group group-total)
+              (fd/+ a group-total o)))]
+    (foldo f groups 0 duration)))
 
-(defne bar-noteso [bar notes]
-  ([ [] _ ]
-   (== notes []))
-  ([ [group . groups] _ ]
-   (fresh [groups-notes]
-     (bar-noteso groups groups-notes)
-     (appendo group groups-notes notes))))
+(defn bar-noteso [bar notes]
+  (foldo appendo bar [] notes))
 
 (defne scaleo [direction notes]
   ([ _ [] ])
@@ -83,6 +95,20 @@
    (fresh [tail]
      (conso [p2 v2] ns tail)
      (scaleo direction tail))))
+
+(defne min-intervalo [min notes]
+  ([ _ [] ])
+  ([ _ [[p _]] ] (pitcho p))
+  ([ _ [[p1 _] . [p2 v2] . ns] ]
+   (pitcho p1)
+   (pitcho p2)
+   (fresh [diff tail]
+     (fd/>= diff min)
+     (conde
+      [(fd/+ p1 diff p2)]
+      [(fd/- p1 diff p2)])
+     (conso [p2 v2] ns tail)
+     (min-intervalo min tail))))
 
 (defn baro [bar]
   (fresh [dir notes]
@@ -102,11 +128,11 @@
   [(->pitch p)
    (->note-value d)])
 
-(defn ->bar [bar]
-  (map ->note bar))
-
 (defn flatten-groups [groups]
   (map #(apply concat %1) groups))
+
+(defn ->bar [bar]
+  (map ->note bar))
 
 ;;; INTERFACE
 

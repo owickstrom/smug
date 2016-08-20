@@ -39,8 +39,9 @@
          rendered-elements
          "\n}")))
 
-(defn render-svg-to [score f]
+(defn render-svg-to [score path]
   (let [document (render-as-lilypond score)
+        f (io/file path)
         dir (.getParent f)
         name (clojure.string/replace (.getName f) ".svg$" "")
         lilypond-output (io/file dir name)
@@ -50,7 +51,7 @@
                                      (str "--output=" lilypond-output)
                                      "-"
                                      :in document)]
-      (if (= exit 0)
+      (if (or (= exit 0) (not (.exists f)))
         output-file
         (throw (ex-info "Failed to render score using Lilypond"
                         {:stdout out

@@ -10,6 +10,10 @@
                  [de.sciss/abc4j "0.6.0"]]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler smug.handler/app}
+  :aot [smug.handler
+        smug.music
+        smug.render.abc4j
+        smug.render.lilypond]
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring/ring-mock "0.3.0"]]}})

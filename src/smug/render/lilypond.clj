@@ -45,11 +45,15 @@
          rendered-elements
          "\n}")))
 
+(defn- extract-written-files [output]
+  (let [found (re-seq #"Layout output to `(.+?)'..." output)]
+    (map second found)))
+
 (defn render-svg-to [score path]
   (let [document (render-as-lilypond score)
         f (io/file path)
         dir (.getParent f)
-        name (clojure.string/replace (.getName f) ".svg$" "")
+        name (clojure.string/replace (.getName f) #".svg$" "")
         lilypond-output (io/file dir name)
         output-file (io/file dir (str name ".svg"))]
     (let [{:keys [exit out err]} (sh "lilypond"
@@ -57,8 +61,11 @@
                                      (str "--output=" lilypond-output)
                                      "-"
                                      :in document)]
-      (if (or (= exit 0) (not (.exists f)))
-        output-file
+      (cond
+        (not= exit 0)
         (throw (ex-info "Failed to render score using Lilypond"
                         {:stdout out
-                         :stderr err}))))))
+                         :stderr err}))
+        
+        :else
+        (map #(io/file dir %) (extract-written-files err))))))

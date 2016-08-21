@@ -8,8 +8,8 @@
                  [ring/ring-jetty-adapter "1.5.0"]
                  [org.clojure/core.logic "0.8.10"]
                  [de.sciss/abc4j "0.6.0"]]
-  :plugins [[lein-ring "0.9.7"]]
-  :ring {:handler smug.handler/app}
+  :plugins []
+  :main smug.handler
   :aot [smug.handler
         smug.music
         smug.render.abc4j

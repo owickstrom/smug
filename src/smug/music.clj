@@ -1,3 +1,9 @@
+;;; Copyright (c) 2016 Oskar Wickström
+;;;
+;;; This Source Code Form is subject to the terms of the Mozilla Public
+;;; License, v. 2.0. If a copy of the MPL was not distributed with this
+;;; file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 (ns smug.music
   (:refer-clojure :exclude [==])
   (:require [clojure.core.logic :refer :all]
@@ -117,9 +123,9 @@
 (defn ->bar [bar]
   (map ->note bar))
 
-(defn ->score [bars]
-  (let [without-groups (flatten-groups bars)]
-    {:bars (map ->bar without-groups)}))
+(defn ->score [bars-with-groups]
+  (let [bars (flatten-groups bars-with-groups)]
+    {:bars (map ->bar bars)}))
 
 ;;; INTERFACE
 

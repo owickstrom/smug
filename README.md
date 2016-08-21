@@ -27,8 +27,8 @@ user> (require '[smug.music :refer :all])
 user> (require '[smug.render.lilypond :refer :all])
 user> (-> (generate-score 64)
           (render-svg-to "/tmp/foo"))
-; returns:
-; #object[java.io.File 0x5c2bc22c "/tmp/foo.svg"]
+; returns the rendered files:
+; (#object[java.io.File 0x13d6912f "/tmp/foo-page-1.svg"] #object[java.io.File 0x7def9c5b "/tmp/foo-page-2.svg"])
 ```
 
 This requires the `lilypond` executable to be on your `PATH`, and the given

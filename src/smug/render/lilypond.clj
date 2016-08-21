@@ -49,7 +49,10 @@
   (let [found (re-seq #"Layout output to `(.+?)'..." output)]
     (map second found)))
 
-(defn render-svg-to [score path]
+(defn render-svg-to
+  "Render a score using Lilypond. Requires `lilypond` to be on the PATH. Returns
+   a sequence of `java.io.File` objects."
+  [score path]
   (let [document (render-as-lilypond score)
         f (io/file path)
         dir (.getParent f)

@@ -3,12 +3,10 @@
             [ring.mock.request :as mock]
             [smug.handler :refer :all]))
 
-(deftest test-app
-  (testing "main route"
-    (let [response (app (mock/request :get "/"))]
-      (is (= (:status response) 200))
-      (is (= (:body response) "<img src=\"/score.svg\" />"))))
+(defn- init-test-app []
+  (init-app (.getAbsolutePath (java.io.File/createTempFile "smug-test" ""))))
 
-  (testing "not-found route"
-    (let [response (app (mock/request :get "/invalid"))]
+(deftest test-app
+    (testing "not-found route"
+    (let [response ((init-test-app) (mock/request :get "/invalid"))]
       (is (= (:status response) 404)))))

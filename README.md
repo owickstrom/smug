@@ -14,6 +14,8 @@ To start a web server for the application, run:
 
 ```sh
 lein run
+# or with explicit overrides:
+PORT=5000 OUTPUT_DIR=/tmp/my-scores lein run
 ```
 
 ### Lilypond Rendering

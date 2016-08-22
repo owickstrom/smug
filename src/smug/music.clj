@@ -12,8 +12,11 @@
 
 ;;; LOGIC
 
-(defn pitcho [p]
-  (fd/in p (fd/interval 1 7)))
+(defn pitcho
+  "Constrain `p` to be a pitch, i.e. an integer in the range 0-7,
+   where 0 is a 'rest', and 1-7 are the notes C-B."
+  [p]
+  (fd/in p (fd/interval 0 7)))
 
 (defn note-valueo [v]
   (fd/in v (fd/domain 1 2 4 8 ;16
@@ -93,6 +96,12 @@
   (fresh [note-values]
     (groupso bar 16)))
 
+(defn barso [count bars]
+  (let [bs (repeatedly count lvar)]
+    (all
+     (everyg baro bs)
+     (== bars bs))))
+
 (defn bars-noteso [bars notes]
   (fresh [bars-notes]
     (mapo flatteno bars bars-notes)
@@ -105,10 +114,26 @@
      (everyg baro bars)
      (== phrase bars))))
 
+(defne phraseo [notes]
+  ([ [[p1 4] [p2 4] [p3 4] [p4 4] [p5 4] [0 4]] ]
+   (fd/!= 0 p1)
+   (fd/!= 0 p2)
+   (fd/!= 0 p3)
+   (fd/!= 0 p4)
+   (fd/!= 0 p5)
+   (distincto [p1 p2 p3 p4 p5]))
+  ([ [[p1 4] [p2 8] [p3 2] [p4 2] [p5 4] [0 4]] ]
+   (fd/!= 0 p1)
+   (fd/!= 0 p2)
+   (fd/!= 0 p3)
+   (fd/!= 0 p4)
+   (fd/!= 0 p5)
+   (distincto [p1 p2 p3 p4 p5])))
+
 ;;; CONVERSION
 
 (defn ->pitch [p]
-  (nth [:c :d :e :f :g :a :b] (- p 1)))
+  (nth [:r :c :d :e :f :g :a :b] p))
 
 (defn ->note-value [d]
   (/ d 16))
@@ -123,13 +148,20 @@
 (defn ->bar [bar]
   (map ->note bar))
 
-(defn ->score [bars-with-groups]
-  (let [bars (flatten-groups bars-with-groups)]
-    {:bars (map ->bar bars)}))
+(defn ->score [bars]
+  {:bars (map ->bar bars)})
 
 ;;; INTERFACE
 
 (defn generate-score [n]
-  (let [phrases (run n [q]
-                 (phraseo q))]
-    (->score (apply concat phrases))))
+  (let [bars (run n [notes]
+               (fresh [p1 p2 bars]
+                 (phraseo p1)
+                 (phraseo p2)
+                 (everyg noteo p1)
+                 (everyg noteo p2)
+                 (appendo p1 p2 notes)
+                 (notes-total-valueo notes (* 16 3))
+                 (barso 3 bars)
+                 (bars-noteso bars notes)))]
+    (->score bars)))

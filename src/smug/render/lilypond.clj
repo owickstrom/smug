@@ -16,7 +16,7 @@
   (str
    (let [n (name pitch)
          lower (clojure.string/lower-case n)]
-     (if (= lower n)
+     (if (#{"c" "d" "e" "f" "g" "a" "b"} lower)
        (str lower "'")
        lower))
    (if (ratio? duration)
